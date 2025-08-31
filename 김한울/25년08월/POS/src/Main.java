@@ -1,5 +1,7 @@
 import order.Order;
 import service.PayService;
+import util.Input;
+import util.Status;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -29,10 +31,10 @@ public class Main {
 
 
         POS_System posSystem = new POS_System();
-        Scanner input = new Scanner(System.in);
-        int menuSize = SystemMenu.values().length;
-        posSystem.showInfo();
-/*        int menuInput = input.nextInt();*/
+        posSystem.start();
+
+
+
 
 
 

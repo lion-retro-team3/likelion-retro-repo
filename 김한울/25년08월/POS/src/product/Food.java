@@ -1,11 +1,12 @@
 package product;
 
 public class Food extends Product{
-    public Food(Long code, String name, Long price, int stockQuantity, boolean hasPromotion) {
-        super(code, name, price, stockQuantity, hasPromotion);
+
+    public Food(String name, int price, int stockQuantity, boolean hasPromotion) {
+        super(name, price, stockQuantity, hasPromotion);
     }
 
-    public Food(Long code, String name, Long price, int stockQuantity) {
-        super(code, name, price, stockQuantity);
+    public Food(String name, int price, int stockQuantity) {
+        super(name, price, stockQuantity);
     }
 }

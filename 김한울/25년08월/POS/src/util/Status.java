@@ -1,6 +1,5 @@
 package util;
 
-//어떤 상태값
 public enum Status {
     WAIT("대기"),
     SUCCESS("성공"),

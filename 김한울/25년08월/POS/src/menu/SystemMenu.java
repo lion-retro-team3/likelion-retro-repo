@@ -7,10 +7,9 @@ public enum SystemMenu {
     PRODUCT_PAY(1,"상품 결제"),
     PRODUCT_ORDER(2,"상품 발주"),
     STOCK_CHECK(3,"재고 확인"),
-    BALANCE_CHECK(4,"잔고 확인"),
-    HISTORY_CHECK(5,"기록 조회"),
-    DISPOSAL_REGISTRATION(6,"폐기 등록"),
-    PRODUCT_REFUND(7,"상품 환불");
+    HISTORY_CHECK(4,"기록 조회"),
+    DISPOSAL_REGISTRATION(5,"폐기 등록"),
+    PRODUCT_REFUND(6,"상품 환불");
 
 
     private final String description;

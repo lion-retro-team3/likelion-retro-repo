@@ -1,4 +1,4 @@
-package repo;
+package repository;
 
 import product.Alcohol;
 import product.Beverage;
@@ -8,7 +8,6 @@ import product.Snack;
 import java.util.Map;
 
 public class ProductRepo {
-
 
     public static void initTestProduct(Map<Long, Product> map){
         Product product = null;

@@ -1,9 +1,6 @@
-package payment;
+package common;
 
 public class Cash extends Payment {
-
-    public Cash() {
-    }
 
     public Cash(int amount) {
         super(amount);
@@ -14,5 +11,4 @@ public class Cash extends Payment {
         int amount = this.getAmount() - totalPrice;
         this.setAmount(amount);
     }
-
 }

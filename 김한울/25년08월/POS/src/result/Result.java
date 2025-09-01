@@ -1,4 +1,6 @@
-package util;
+package result;
+
+import util.Status;
 
 public class Result<T> {
 

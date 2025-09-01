@@ -1,7 +1,7 @@
 package order;
 
 import product.Product;
-import util.Result;
+import result.Result;
 import util.Status;
 
 import java.util.List;
@@ -22,7 +22,6 @@ public class Order {
         this.totalPrice = this.sumTotalPrice(orderItemList);
         this.status = Status.WAIT;
     }
-
 
     public Long getOrderId() {
         return orderId;
@@ -65,16 +64,6 @@ public class Order {
         return this.sumTotalPrice(this.orderItemList);
     }
 
-
-    @Override
-    public String toString() {
-        return "주문 : \n" +
-                "\t상품 번호 : " + orderId +
-                "\n상품 목록 : " + orderItemList +
-                "\t총 금액 : " + totalPrice +
-                "\t주문 결과 : " + status.getDescription() +"\n";
-    }
-
     public void showOrderList() {
         StringBuilder sb = new StringBuilder();
         for (OrderItem orderItem : orderItemList) {
@@ -86,15 +75,13 @@ public class Order {
         System.out.println("=====================================");
     }
 
-
-
-    public Result<Order> process(Product product, int newQuantity) {
+    public Result<Order> process(Product product, int quantity) {
 
         boolean find = false;
         boolean removeData = false;
         //첫 데이터
         if (orderItemList.isEmpty()) {
-            OrderItem orderItem = new OrderItem(product, newQuantity);
+            OrderItem orderItem = new OrderItem(product, quantity);
             orderItemList.add(orderItem);
             return Result.success("성공적으로 주문이 등록되었습니다.\n", this);
         }
@@ -108,9 +95,9 @@ public class Order {
                 int originQuantity = item.getOrderQuantity();
 
                 // 기존데이터의 경우
-                // 현재 요청 수량 + 추가 요청 수량이 음수라면 리스트 삭제, 양수라면 요구 수량 변경
-                int sumQuantity = originQuantity + newQuantity;
-                if (sumQuantity <= 0) {
+                // 재고 + 요청 수량이 음수라면 리스트 삭제, 양수라면 요구 수량 변경
+                int sumQuantity = originQuantity + quantity;
+                if (sumQuantity < 0) {
                     removeData = true;
                     find=true;
                     break;
@@ -125,15 +112,16 @@ public class Order {
 
         //기존 데이터 발견 X
         if (!find) {
-            OrderItem orderItem = new OrderItem(product, newQuantity);
+            OrderItem orderItem = new OrderItem(product, quantity);
             orderItemList.add(orderItem);
         }
         if (removeData){
-            OrderItem orderItem = new OrderItem(product, newQuantity);
+            OrderItem orderItem = new OrderItem(product, quantity);
             orderItemList.remove(orderItem);
             return Result.success("성공적으로 주문이 삭제되었습니다.\n", this);
 
         }
+
         //거래 진행 상황 출력
         sumTotalPrice();
         return Result.success("성공적으로 주문이 등록되었습니다.\n", this);

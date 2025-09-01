@@ -1,16 +1,11 @@
-import payment.Credit;
-import payment.Payment;
 import menu.SystemMenu;
 import order.Order;
 import order.OrderItem;
 import order.OrderService;
-import payment.PaymentType;
 import product.Product;
-import repository.ProductRepo;
-import util.Result;
-import pay.PayService;
+import repo.ProductRepo;
+import service.PayService;
 import util.Input;
-import util.Status;
 
 import java.util.*;
 
@@ -20,15 +15,13 @@ public class POS_System {
 
     private final PayService payService;
     private final OrderService orderService;
-    private Map<Long, Product> productMapKeyByCode; //물건 리스트
-    private List<Order> orderLog; //거래 내역
+    private Map<Long,Product> productMapKeyByCode; //물건 리스트
 
     public POS_System() {
         this.payService = new PayService();
         this.orderService = new OrderService();
         this.productMapKeyByCode = new HashMap<>();
         ProductRepo.initTestProduct(this.productMapKeyByCode);
-        orderLog = new ArrayList<>();
     }
 
     public void start() {
@@ -41,7 +34,7 @@ public class POS_System {
             sb.append("[").append(description).append("]").append(" 를 선택하셨습니다.\n");
             switch (choice) {
 
-                case SYSTEM_EXIT -> {
+                case  SYSTEM_EXIT-> {
                     System.out.println(sb);
                     sb.setLength(0);
                     //this.programExit();
@@ -61,18 +54,16 @@ public class POS_System {
                 case STOCK_CHECK -> {
                     //재고 확인
                     System.out.println(sb);
-                    System.out.println("================================");
-                    System.out.println("[재고 확인]");
-                    for (Product product : productMapKeyByCode.values()) {
-                        System.out.print(product.toString());;
-                    }
-                    System.out.println("================================");
+                    sb.setLength(0);
+                }
+                case BALANCE_CHECK -> {
+                    //잔고 확인
+                    System.out.println(sb);
                     sb.setLength(0);
                 }
                 case HISTORY_CHECK -> {
-                    //기록 조회
+                    //거래 기록 확인
                     System.out.println(sb);
-                    this.showOrderLog();
                     sb.setLength(0);
                 }
                 case PRODUCT_REFUND -> {
@@ -96,11 +87,7 @@ public class POS_System {
 
     }
 
-    private void showOrderLog() {
-        System.out.println(orderLog.toString());
-    }
-
-    public void showProductList() {
+    public void showProductList(){
         System.out.println(productMapKeyByCode.toString());
     }
 
@@ -124,70 +111,38 @@ public class POS_System {
         System.out.println("******************************[상품 리스트]************************************************************");
         showProductList();
         System.out.println("******************************************************************************************");
-
+        
         //결제 진행 상황 리스트
         List<OrderItem> orderItemList = new ArrayList<>();
         Order payOrder = new Order(orderItemList);
-        boolean addmore = true;
+        boolean addmore =true;
 
-        //품목 추가중
-        while (addmore) {
+        while (addmore){
             //결제 품목 추가
-            String msg = "[결제] 상품 번호를 입력해주세요 -> ";
-            //Input.inputInteger 안에서 유효값 입력 확인
-            String inputCode = Input.inputInteger(msg);
-            if (inputCode.equals("quit")) {
-                addmore = false;
-                break;
-            }
-            //물품 추가 프로세스
-            Long inputNum = Long.valueOf(inputCode);
-            Product scanProduct = productMapKeyByCode.get(inputNum);
+            String msg = "[결제] 품목 상품 번호를 입력해주세요 -> ";
+            String inputcode = String.valueOf(Input.inputInteger(msg));
+            Long inputCode = Long.valueOf(inputcode);
+            Product scanProduct = productMapKeyByCode.get(inputCode);
             if (orderService.isInvalidProduct(scanProduct)) {
                 System.out.println("유효하지 않은 코드입니다.");
             } else {
                 System.out.print("[결제] 주문 수량을 입력해주세요 -> ");
                 int inputQuantity = Input.inputInteger();
+
+                //TODO : 재고수량을 넘지 못해야한다.
                 String payMsg = payOrder.process(scanProduct, inputQuantity).getMsg();
                 System.out.print(payMsg);
                 payOrder.showOrderList();
-                int tempTotalPrice = payOrder.sumTotalPrice();
-                System.out.println("총 지불 금액 : " + tempTotalPrice + " 원 입니다.");
+
             }
         }
 
+        //Order order =new Order();
 
         //결제 방법 선택
-        int start = 1, end = 3;
-
-        if (!payOrder.getOrderItemList().isEmpty()) {
-            String paymentMsg = "[결제] 결제 수단 번호를 입력해주세요\n" +
-                    "1. 현금 결제\t2. 카드 결제\t3. 취소 -> ";
-            String pickPayment = Input.inputInteger(paymentMsg, start, end);
-            int paymentCode = Integer.parseInt(pickPayment);
-            //enum 개수보다 크다면 취소로 판단
-            if (paymentCode > PaymentType.values().length) {
-                System.out.println("[결제] 취소를 선택했습니다.");
-                payOrder.setStatus(Status.CANCEL);
-                orderLog.add(payOrder);
-                return;
-            }
-            PaymentType byCode = PaymentType.findByCode(paymentCode);
-            Payment payment = Payment.create(byCode);
-
-            //추후 bank가 생긴다면 계좌 등으로 연결 가능
-            if (payment instanceof Credit) payment.setAmount(payOrder.getTotalPrice());
-
-            Result<Order> payResult = payService.pay(payOrder, payment);
-            System.out.println(payResult.getMsg());
-
-            orderLog.add(payOrder);
-            if (payResult.getStatus()== Status.SUCCESS){
-                System.out.println("잔액은 " + payment.getAmount() + " 원 입니다.");
-            }
-        } else {
-            System.out.println("결제할 상품이 없습니다.\n");
-        }
+        
+        //결제
+        //payService.pay()
 
         System.out.println("==================================");
     }

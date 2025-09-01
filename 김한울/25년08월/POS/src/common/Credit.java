@@ -1,9 +1,6 @@
-package payment;
+package common;
 
 public class Credit extends Payment{
-
-    public Credit() {
-    }
 
     public Credit(int amount) {
         super(amount);

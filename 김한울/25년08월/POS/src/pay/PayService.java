@@ -13,6 +13,8 @@ public class PayService {
         //1. 결제 금액 확인
         int payment = order.getTotalPrice();
 
+        //test
+
         //2. 결제 시도
         boolean canPay = method.canPay(order.getTotalPrice());
         if (!canPay) {

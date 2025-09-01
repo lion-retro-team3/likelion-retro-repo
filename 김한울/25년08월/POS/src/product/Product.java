@@ -8,15 +8,21 @@ public abstract class Product {
     private String name;
     private int price;
     private int stockQuantity;
-    private static Long idSequence =1L;
+    private boolean hasPromotion;
+
+    private static Long idSequence =0L;
 
     //code 는 setter 없음  idSequence 로 자동 할당.
-    public Product(String name, int price, int stockQuantity) {
+    public Product(String name, int price, int stockQuantity, boolean hasPromotion) {
         this.code = idSequence++;
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.hasPromotion = hasPromotion;
+    }
 
+    public Product(String name, int price, int stockQuantity) {
+        this(name, price, stockQuantity, false);
     }
 
     public Long getCode() {
@@ -47,13 +53,22 @@ public abstract class Product {
         this.stockQuantity = stockQuantity;
     }
 
+    public boolean isHasPromotion() {
+        return hasPromotion;
+    }
+
+    public void setHasPromotion(boolean hasPromotion) {
+        this.hasPromotion = hasPromotion;
+    }
+
     @Override
     public String toString() {
         return
                 "제품 번호 : " + code +
                 "\t제품명 : '" + name + '\'' +
                 "\t가격 : " + price +
-                "\t재고 수량 : " + stockQuantity + "\n";
+                "\t재고 수량 : " + stockQuantity +
+                "\t행사 : " + hasPromotion +"\n";
     }
 
     @Override

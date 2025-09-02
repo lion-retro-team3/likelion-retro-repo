@@ -1,5 +1,7 @@
 package payment;
 
+import java.util.Optional;
+
 public enum PaymentType {
     CASH(1), CREDIT(2);
 
@@ -13,12 +15,13 @@ public enum PaymentType {
         return code;
     }
 
-    public static PaymentType findByCode(int code) {
-
+    public static Optional<PaymentType> findByCode(int code) {
+        PaymentType find = null;
         for (PaymentType type : PaymentType.values()) {
-            if (type.getCode() == code) return type;
+            if (type.getCode() == code) find = type;
         }
-        return null;
+        return Optional.ofNullable(find);
     }
+
 
 }

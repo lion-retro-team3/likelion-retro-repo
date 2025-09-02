@@ -16,6 +16,7 @@ public class Input {
         return scanner.next();
     }
 
+    //종료 cmd 없을경우
     public static int inputInteger() {
         while (true) {
             String token = scanner.next();
@@ -28,6 +29,8 @@ public class Input {
 
         }
     }
+    
+    //종료 커맨드가 있는 메뉴를 선택할 경우 사용
     //return은 내부에서 정수 변환이 가능한지 확인. String 타입 이지만 논리적으로는 정수
     public static String inputInteger(String msg) {
 
@@ -79,7 +82,7 @@ public class Input {
 
     public static SystemMenu inputMenu() {
 
-        int code = scanner.nextInt();
+        int code = Input.inputInteger();
         SystemMenu byCode = SystemMenu.findByCode(code);
 
         return byCode;

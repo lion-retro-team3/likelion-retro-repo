@@ -10,9 +10,18 @@ public class Cash extends Payment {
     }
 
     @Override
-    public void confirm(int totalPrice) {
-        int amount = this.getAmount() - totalPrice;
-        this.setAmount(amount);
+    public boolean pay(int totalPrice) {
+        this.decrease(totalPrice);
+        return true;
     }
 
+    @Override
+    public boolean cancel() {
+        return false;
+    }
+
+    @Override
+    public boolean refund() {
+        return false;
+    }
 }

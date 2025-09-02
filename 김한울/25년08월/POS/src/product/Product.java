@@ -43,7 +43,7 @@ public abstract class Product {
         return stockQuantity;
     }
 
-    public void setStockQuantity(int stockQuantity) {
+    private void setStockQuantity(int stockQuantity) {
         this.stockQuantity = stockQuantity;
     }
 
@@ -68,4 +68,14 @@ public abstract class Product {
     public int hashCode() {
         return Objects.hash(code, name, price);
     }
+
+    public boolean decreaseStock(int quantity){
+        //음수 불가능.
+        if (quantity <  getStockQuantity()){
+            int stock = getStockQuantity() - quantity;
+            this.setStockQuantity(stock);
+            return true;
+        }else return false;
+    }
+
 }

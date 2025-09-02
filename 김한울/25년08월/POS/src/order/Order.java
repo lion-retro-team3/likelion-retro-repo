@@ -19,7 +19,7 @@ public class Order {
     public Order(List<OrderItem> orderItemList) {
         this.orderId = idSequence++;
         this.orderItemList = orderItemList;
-        this.totalPrice = this.sumTotalPrice(orderItemList);
+        this.totalPrice = this.updateTotalPrice(orderItemList);
         this.status = Status.WAIT;
     }
 
@@ -40,6 +40,8 @@ public class Order {
         return status;
     }
 
+
+
     public void setOrderItemList(List<OrderItem> orderItemList) {
         this.orderItemList = orderItemList;
     }
@@ -48,21 +50,21 @@ public class Order {
         this.totalPrice = totalPrice;
     }
 
-    public void setStatus(Status status) {
+    private void setStatus(Status status) {
         this.status = status;
     }
 
-    private int sumTotalPrice(List<OrderItem> orderItemList) {
+    private int updateTotalPrice(List<OrderItem> orderItemList) {
         int sum = 0;
         for (OrderItem orderItem : orderItemList) {
             sum += orderItem.getOrderPrice();
         }
-        this.totalPrice = sum;
+        this.setTotalPrice(sum);
         return sum;
     }
 
-    public int sumTotalPrice() {
-        return this.sumTotalPrice(this.orderItemList);
+    public int updateTotalPrice() {
+        return this.updateTotalPrice(this.orderItemList);
     }
 
 
@@ -85,67 +87,47 @@ public class Order {
         else System.out.println("결제할 상품을 등록해주세요.");
         System.out.println("=====================================");
     }
-
-
-
-    public Result<Order> process(Product product, int newQuantity) {
-
-        boolean find = false;
-        boolean removeData = false;
-        //첫 데이터
-        if (orderItemList.isEmpty()) {
-            OrderItem orderItem = new OrderItem(product, newQuantity);
-            orderItemList.add(orderItem);
-            return Result.success("성공적으로 주문이 등록되었습니다.\n", this);
-        }
-
-        //iterator 가 나중에 orderItemList 보다 나중에 열려야 한다.
-        //ConcurrentModificationException 방지
-        for (OrderItem item : orderItemList) {
-            //같은 품목이면 원래 리스트에 orderQuantity 추가.
-            //다른 품목이면 새로운 데이터로 추가.
-            if (item.getProduct().equals(product)) {
-                int originQuantity = item.getOrderQuantity();
-
-                // 기존데이터의 경우
-                // 현재 요청 수량 + 추가 요청 수량이 음수라면 리스트 삭제, 양수라면 요구 수량 변경
-                int sumQuantity = originQuantity + newQuantity;
-                if (sumQuantity <= 0) {
-                    removeData = true;
-                    find=true;
-                    break;
-                } else {
-                    item.setOrderQuantity(sumQuantity);
-                    find = true;
-
-                }
-                break;
-            }
-        }
-
-        //기존 데이터 발견 X
-        if (!find) {
-            OrderItem orderItem = new OrderItem(product, newQuantity);
-            orderItemList.add(orderItem);
-        }
-        if (removeData){
-            OrderItem orderItem = new OrderItem(product, newQuantity);
-            orderItemList.remove(orderItem);
-            return Result.success("성공적으로 주문이 삭제되었습니다.\n", this);
-
-        }
-        //거래 진행 상황 출력
-        sumTotalPrice();
-        return Result.success("성공적으로 주문이 등록되었습니다.\n", this);
+    public boolean hasOrderItemList() {
+        return !orderItemList.isEmpty();
     }
 
     public void confirm() {
+        orderItemList.forEach(orderItem -> {
+            int orderQuantity =orderItem.getOrderQuantity();
+            orderItem.getProduct().decreaseStock(orderQuantity);
+        });
+        this.success();
+    }
 
-        for (OrderItem orderItem : orderItemList) {
-            Product product = orderItem.getProduct();
-            int quantity = product.getStockQuantity() - orderItem.getOrderQuantity();
-            product.setStockQuantity(quantity);
-        }
+    public void fail() {
+        this.setStatus(Status.FAIL);
+    }
+
+    public void cancel() {
+        this.setStatus(Status.CANCEL);
+    }
+
+    public void success(){
         this.setStatus(Status.SUCCESS);
+    }
+
+    public boolean isSuccess(){
+        return this.getStatus() == Status.SUCCESS;
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItemList.add(orderItem);
+        this.updateTotalPrice();
+
+    }
+
+    public boolean isEmptyOrderList(){
+        return this.getOrderItemList().isEmpty();
+    }
+
+    public void removeOrderItem(OrderItem orderItem) {
+
+        this.getOrderItemList().remove(orderItem);
+        this.updateTotalPrice();
     }
 }

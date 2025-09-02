@@ -41,11 +41,11 @@ public class Result<T> {
     }
 
     public static <T> Result<T> cancel(T data) {
-        return new Result<>(Status.FAIL, "cancel", data);
+        return new Result<>(Status.CANCEL, "cancel", data);
     }
 
     public static <T> Result<T> cancel(String cancelMsg, T data) {
-        return new Result<>(Status.FAIL, cancelMsg, data);
+        return new Result<>(Status.CANCEL, cancelMsg, data);
     }
 
 

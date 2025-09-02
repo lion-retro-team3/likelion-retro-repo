@@ -10,9 +10,18 @@ public class Credit extends Payment{
     }
 
     @Override
-    public void confirm(int totalPrice) {
+    public boolean pay(int totalPrice) {
+        this.decrease(totalPrice);
+        return true;
+    }
 
-        int amount = this.getAmount() - totalPrice;
-        this.setAmount(amount);
+    @Override
+    public boolean cancel() {
+        return false;
+    }
+
+    @Override
+    public boolean refund() {
+        return false;
     }
 }

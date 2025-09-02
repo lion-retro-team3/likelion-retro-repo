@@ -1,11 +1,10 @@
 package payment;
 
-import util.Input;
-
-public abstract class Payment {
+public abstract class Payment implements Payable,Revertable{
     int amount;
 
     public Payment() {
+        this.amount=0;
     }
 
     public Payment(int amount) {
@@ -16,15 +15,20 @@ public abstract class Payment {
         return amount;
     }
 
-    public void setAmount(int amount) {
+    private void setAmount(int amount) {
         this.amount = amount;
     }
 
+    public void increase(int amount){
+        this.setAmount(this.getAmount()+amount);
+    }
+
+    public void decrease(int amount){
+        this.setAmount(this.getAmount()-amount);
+    }
     public boolean canPay(int totalPrice){
         return this.amount >= totalPrice;
     }
-
-    public abstract void confirm(int totalPrice);
 
     //입력범위 제한으로 스위치 문 밖으로 나가지 않음.
     public static Payment create(PaymentType method){
@@ -32,9 +36,7 @@ public abstract class Payment {
         Payment payment = null;
         switch (method){
             case CASH:{
-                String amountString = Input.inputInteger("[결제 방법] 현금 결제 금액을 입력해주세요 -> ",0,Integer.MAX_VALUE);
-                int amount = Integer.parseInt(amountString);
-                payment = new Cash(amount);
+                payment = new Cash();
                 break;
             }
             case CREDIT:{

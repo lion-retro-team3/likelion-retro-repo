@@ -25,7 +25,7 @@ public class OrderItem {
         return this.orderQuantity;
     }
 
-    public void setOrderQuantity(int orderQuantity) {
+    private void setOrderQuantity(int orderQuantity) {
         this.orderQuantity = orderQuantity;
     }
 
@@ -56,4 +56,18 @@ public class OrderItem {
     public int hashCode() {
         return Objects.hash(product);
     }
+
+    public boolean  tryAddOrderQuantity(int newOrderQuantity){
+        int sumQuantity = this.getOrderQuantity() + newOrderQuantity;
+        if (sumQuantity <= 0) return false;
+        this.updateOrderQuantity(sumQuantity);
+        return true;
+
+    }
+
+    public void updateOrderQuantity(int sum) {
+        this.setOrderQuantity(sum);
+    }
+
+
 }

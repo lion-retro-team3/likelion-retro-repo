@@ -57,16 +57,9 @@ public class OrderItem {
         return Objects.hash(product);
     }
 
-    public boolean  tryAddOrderQuantity(int newOrderQuantity){
-        int sumQuantity = this.getOrderQuantity() + newOrderQuantity;
-        if (sumQuantity <= 0) return false;
-        this.updateOrderQuantity(sumQuantity);
-        return true;
 
-    }
-
-    public void updateOrderQuantity(int sum) {
-        this.setOrderQuantity(sum);
+    public void updateOrderQuantity(int qty) {
+        this.setOrderQuantity(qty);
     }
 
 

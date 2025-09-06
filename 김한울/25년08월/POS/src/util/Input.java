@@ -24,7 +24,9 @@ public class Input {
                 return Integer.parseInt(token);
             } catch (NumberFormatException e) {
                 System.out.println("[시스템] 숫자만 입력 가능합니다.\n");
+
             }
+
 
 
         }

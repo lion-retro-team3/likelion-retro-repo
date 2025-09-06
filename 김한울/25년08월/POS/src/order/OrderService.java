@@ -23,68 +23,62 @@ public class OrderService {
         orderLog.add(newOrder);
     }
 
-    public Result<Order> registryOrderItem(Order payOrder, Product product, int newOrderQuantity) {
+    public Result<Order> addOrderItemInOrder(Order payOrder, OrderItem targetOrderItem) {
 
-        boolean find = false;
-        boolean removeThisOrderItem = false;
-        if (payOrder.isEmptyOrderList()) {
-            OrderItem orderItem = new OrderItem(product, newOrderQuantity);
 
-            payOrder.addOrderItem(orderItem);
-            return Result.success("성공적으로 주문이 등록되었습니다.\n", payOrder);
-        }
 
-        for (OrderItem item : payOrder.getOrderItemList()) {
-            //같은 품목이면 원래 리스트에 orderQuantity 추가.
-            //다른 품목이면 새로운 데이터로 추가.
-            if (item.getProduct().equals(product)) {
-                int originQuantity = item.getOrderQuantity();
-                //더한게 양수인지 확인 -> 양수면 갱신 음수면 리스트 삭제
-                boolean isPositive = item.tryAddOrderQuantity(newOrderQuantity);
+    }
 
-                if (!isPositive) {
-                    removeThisOrderItem = true;
-                    //orderItemList.remove(orderItem); 이 아닌이유
-                    find = true;
-                    break;
-                } else {
-                    find = true;
-                }
-                // 기존데이터의 경우
+    public Result<Order> updateOrderItemInOrder(Order payOrder, OrderItem targetOrderItem) {
+
+
+
+
+        payOrder.addOrderItem(targetOrderItem);
+        payOrder.updateTotalPrice();
+        return Result.success("성공적으로 주문이 등록되었습니다.\n", payOrder);
+    }
+
+    //현재 리스트에 반드시 들어있음
+    public Result<Optional<OrderItem>> AddOrUpdateProductInOrder(Product product, int quantity) {
+        boolean hasOrderItemInList = false;
+        OrderItem findItem = null;
+        //등록되어있음 -> 양수,음수 가능, 신규 등록 -> 양수만 가능.
+
+        List<OrderItem> orderItemList = order.getOrderItemList();
+        //등록할 제품이 이미 주문내역이 있다면 음수 가능
+        for (OrderItem orderItem : orderItemList) {
+            hasOrderItemInList = orderItem.getProduct().equals(product);
+
+            if (hasOrderItemInList) {
+                findItem = orderItem;
                 break;
             }
         }
 
-        //기존 데이터 발견 X
-        if (!find) {
-            OrderItem orderItem = new OrderItem(product, newOrderQuantity);
-            payOrder.addOrderItem(orderItem);
-        }
-        if (removeThisOrderItem) {
-            //TODO 새로 만드는 것보다는 인덱스를 위에서 알아낸 다음 remove 하는 방향으로 바꾸기.
-            OrderItem orderItem = new OrderItem(product, newOrderQuantity);
-            payOrder.removeOrderItem(orderItem);
-            return Result.success("성공적으로 주문이 삭제되었습니다.\n", payOrder);
+        //update
+        if (hasOrderItemInList){
+            //음수일때 리스트 삭제 or 요청 재고 감소
+            if (quantity < 0){
 
-        }
-        //거래 진행 상황 출력
+                return  Result.success("주문이 삭제 되었습니다.",findItem);
+            } else {
 
-        return Result.success("성공적으로 주문이 등록되었습니다.\n", payOrder);
+                return Result.success("주문이 추가 되었습니다.", findItem);
+            }
+        }else {
+            //add
+            order.addOrderItem(findItem);
+            return Result.success("주문이 등록 되었습니다.", Optional.of(findItem));
+        }
 
     }
 
-    //TODO 해당 제품의 주문내역이 있을때 음수 가능 주문 내역 없으면 음수 불가능 구현 할 것.
-    public boolean canRegistry(Order order, Product product, int quantity) {
+    public boolean hasProductInOrder(Order payOrder, OrderItem findProduct) {
 
-        boolean isPresent = false;
-        List<OrderItem> orderItemList = order.getOrderItemList();
-        //등록할 제품이 이미 주문내역이 있다면 음수 가능
-        for (OrderItem orderItem : orderItemList) {
-            isPresent = orderItem.getProduct().equals(product);
-            if (isPresent) break;
-        }
-        if (!isPresent && quantity < 0) return false;
-        return true;
+        Optional<OrderItem> first = payOrder.getOrderItemList().stream().filter(orderItem -> orderItem.equals(findProduct)).findFirst();
+
+        return first.isEmpty();
 
     }
 }

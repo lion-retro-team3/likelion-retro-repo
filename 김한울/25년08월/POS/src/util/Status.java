@@ -4,6 +4,7 @@ public enum Status {
     WAIT("대기"),
     SUCCESS("성공"),
     FAIL("실패"),
+    IN_PROGRESS("진행 중"),
     CANCEL("취소");
 
     private final String description;

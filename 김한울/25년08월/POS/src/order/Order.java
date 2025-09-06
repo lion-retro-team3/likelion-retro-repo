@@ -16,7 +16,7 @@ public class Order {
     private static Long idSequence = 1L;
 
 
-    public Order(List<OrderItem> orderItemList) {
+    public Order(List<OrderItem> orderItemList){
         this.orderId = idSequence++;
         this.orderItemList = orderItemList;
         this.totalPrice = this.updateTotalPrice(orderItemList);

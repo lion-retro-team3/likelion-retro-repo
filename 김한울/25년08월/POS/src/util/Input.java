@@ -89,4 +89,9 @@ public class Input {
 
         return byCode;
     }
+
+
+    public static boolean isQuitCmd(String input) {
+        return input.equals("quit");
+    }
 }

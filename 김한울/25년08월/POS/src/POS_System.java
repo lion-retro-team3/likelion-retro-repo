@@ -1,3 +1,4 @@
+import order.OrderSystem;
 import payment.Cash;
 import payment.Credit;
 import payment.Payment;
@@ -19,15 +20,12 @@ public class POS_System {
 
 
     private final PayService payService;
-    private final OrderService orderService;
-    private ProductService productService;
+    private final OrderSystem orderSystem;
 
 
     public POS_System() {
         this.payService = new PayService();
-        this.orderService = new OrderService();
-        this.productService = new ProductService();
-        this.productService.createInit();
+        this.orderSystem = new OrderSystem();
     }
 
     public void start() {
@@ -92,9 +90,6 @@ public class POS_System {
 
     }
 
-    private boolean isQuitCmd(String input) {
-        return input.equals("quit");
-    }
 
     private void showOrderLog() {
         Optional<List<Order>> orderLog = orderService.getOrderLog();
@@ -140,56 +135,35 @@ public class POS_System {
         //성공 -> 주문등록
         //취소 -> 메뉴화면
         //대기 -> 상품 코드 재입력
-        Result<Optional<Product>> findResult;
-
+/*        while (true){
+            //상품찾기
+            //주문수량입력
+        }*/
+        Result<Product> foundProduct;
         while (true) {
-            findResult = payProcessFindProduct();
-            if (!findResult.isWait()) break;
-        }
+            foundProduct = orderSystem.selectProductFromInput();
+            if (foundProduct.isWait()) {
+                System.out.println(foundProduct.getMsg());
+            } else break;
 
-        //1.상품 찾기 -> Result
-        //TODO if문으로 처리하면 확장, 수정에 너무 어려움 핸들러로 처리
-        if (findResult.isCancel()) {
-            System.out.println("[결제] 를 취소합니다. 메인화면으로 돌아갑니다.");
-            return;
-        }
-
-        //2.주문수량 입력하기
-        //성공 -> 등록 결과처리
-        //취소 -> 메뉴화면
-        //실패 -> 재입력
-        Result<Optional<OrderItem>> findOrderItemResult;
-        Product findProduct = findResult.getData().get();
-        while (true) {
-            //수량 입력
-            findOrderItemResult = this.payProcessCreateOrderItem(findProduct);
-            if (findOrderItemResult.isCancel()) break;
-            
-            //등록인지 수정인지 확인
-            OrderItem findOrderItem = findOrderItemResult.getData().get();
-            boolean isAdd = orderService.hasProductInOrder(payOrder,findOrderItem);
-            if (isAdd){
-                orderService.addOrderItemInOrder(payOrder, orderItem);
-
-            } else {
-                orderService.updateOrderItemInOrder(payOrder, orderItem);
-
+            //1.상품 찾기 -> Result
+            //TODO if문으로 처리하면 확장, 수정에 너무 어려움 핸들러로 처리
+            if (foundProduct.isCancel()) {
+                System.out.println("[결제] 를 취소합니다. 메인화면으로 돌아갑니다.");
+                return;
             }
-            //등록, 수정
-            OrderItem orderItem = findOrderItem;
 
-            if (!findOrderItemResult.isWait()) break;
-            //System.out.println(findOrderItemResult.getMsg());
+            //2.주문수량 입력하기
+            //성공 -> 등록 결과처리
+            //취소 -> 메뉴화면
+            //실패 -> 재입력
+            Result<OrderItem> newOrderItemResult;
+            orderSystem.temp(payOrder, foundProduct.getData());
+            //주문리스트 등록 결과 처리
+            payOrder.showOrderList();
+            System.out.println("총 지불 금액 : " + payOrder.getTotalPrice() + " 원 입니다.");
         }
 
-
-        //3.주문 리스트에 등록 or 수정xxxxxxv/ㅍ., ;/'+
-        OrderItem findOrderItem = findOrderItemResult.getData().get();
-        //Result<Order> addResult = orderService.addOrderItem(payOrder, findOrderItem);
-
-        //주문리스트 등록 결과 처리
-        payOrder.showOrderList();
-        System.out.println("총 지불 금액 : " + payOrder.getTotalPrice() + " 원 입니다.");
 
         //4.결제하기
         payProcessPayment();
@@ -239,41 +213,6 @@ public class POS_System {
 
         System.out.println("==================================");
     }
-
-    private Result<Optional<Product>> payProcessFindProduct() {
-
-        Optional<Product> productByCode = Optional.empty();
-        //결제 품목 추가
-        String msg = "[결제] 상품 번호를 입력해주세요 -> ";
-        //Input.inputInteger 안에서 유효값 입력 확인
-        String inputCode = Input.inputInteger(msg);
-        if (isQuitCmd(inputCode)) {
-            return Result.cancel("[결제] 를 취소했습니다.\n", productByCode);
-        }
-
-        Long inputNum = Long.parseLong(inputCode);
-        productByCode = productService.findByCode(inputNum);
-        if (productByCode.isEmpty()) {
-            return Result.wait("[결제] 유효하지 않은 코드 입니다.", productByCode);
-        }
-        return Result.success("[결제] 상품코드 " + productByCode.get().getCode() + " 를 입력하셨습니다.", productByCode);
-    }
-
-
-
-    private Result<Optional<OrderItem>> payProcessCreateOrderItem(Product product) {
-
-        Optional<OrderItem> orderItem = Optional.empty();
-        String inputQuantity = Input.inputInteger("[결제] 주문 수량을 입력해주세요 -> ");
-        if (isQuitCmd(inputQuantity)) {
-            return Result.cancel("[결제] 주문 수량 입력을 취소했습니다.", null);
-        }
-        //정수 변환
-        int quantityInt = Integer.parseInt(inputQuantity);
-        orderItem = Optional.of(new OrderItem(product, quantityInt));
-        return Result.success("[결제] 해당 주문 확인 중",orderItem);
-    }
-
 
     //상품 결제
     private void payProcessPayment() {

@@ -5,6 +5,7 @@ import util.Result;
 import util.Status;
 
 import java.util.List;
+import java.util.Optional;
 
 public class Order {
 
@@ -16,7 +17,7 @@ public class Order {
     private static Long idSequence = 1L;
 
 
-    public Order(List<OrderItem> orderItemList){
+    public Order(List<OrderItem> orderItemList) {
         this.orderId = idSequence++;
         this.orderItemList = orderItemList;
         this.totalPrice = this.updateTotalPrice(orderItemList);
@@ -39,7 +40,6 @@ public class Order {
     public Status getStatus() {
         return status;
     }
-
 
 
     public void setOrderItemList(List<OrderItem> orderItemList) {
@@ -74,7 +74,7 @@ public class Order {
                 "\t상품 번호 : " + orderId +
                 "\n상품 목록 : " + orderItemList +
                 "\t총 금액 : " + totalPrice +
-                "\t주문 결과 : " + status.getDescription() +"\n";
+                "\t주문 결과 : " + status.getDescription() + "\n";
     }
 
     public void showOrderList() {
@@ -87,13 +87,14 @@ public class Order {
         else System.out.println("결제할 상품을 등록해주세요.");
         System.out.println("=====================================");
     }
+
     public boolean hasOrderItemList() {
         return !orderItemList.isEmpty();
     }
 
     public void confirm() {
         orderItemList.forEach(orderItem -> {
-            int orderQuantity =orderItem.getOrderQuantity();
+            int orderQuantity = orderItem.getOrderQuantity();
             orderItem.getProduct().decreaseStock(orderQuantity);
         });
         this.success();
@@ -107,21 +108,24 @@ public class Order {
         this.setStatus(Status.CANCEL);
     }
 
-    public void success(){
+    public void success() {
         this.setStatus(Status.SUCCESS);
     }
 
-    public boolean isSuccess(){
+    public boolean isSuccess() {
         return this.getStatus() == Status.SUCCESS;
     }
 
     public void addOrderItem(OrderItem orderItem) {
         this.orderItemList.add(orderItem);
         this.updateTotalPrice();
-
     }
 
-    public boolean isEmptyOrderList(){
+    public Optional<OrderItem> getOrderItem(OrderItem orderItem) {
+        return this.orderItemList.stream().filter(orderItem1 -> orderItem1.equals(orderItem)).findFirst();
+    }
+
+    public boolean isEmptyOrderList() {
         return this.getOrderItemList().isEmpty();
     }
 

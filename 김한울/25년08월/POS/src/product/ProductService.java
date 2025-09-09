@@ -7,10 +7,18 @@ import java.util.*;
 
 public class ProductService {
 
+    private static final ProductService INSTANCE = new ProductService();
+
+    public static ProductService getInstance()
+    {
+        return INSTANCE;
+    }
     private Map<Long, Product> productMap; //물건 리스트
 
-    public ProductService() {
+    private ProductService() {
         this.productMap = new HashMap<>();
+        System.out.println("just one thing");
+        this.createInit();
 
     }
 

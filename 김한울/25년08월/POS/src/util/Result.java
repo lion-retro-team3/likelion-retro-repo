@@ -38,6 +38,10 @@ public class Result<T> {
         return new Result<>(Status.CANCEL, cancelMsg, data);
     }
 
+    public static <T> Result<T> inProgress(String progressMsg, T data) {
+        return new Result<>(Status.IN_PROGRESS, progressMsg, data);
+    }
+
     public static <T> Result<T> wait(String waitMsg) {
         return new Result<>(Status.WAIT, waitMsg, null);
     }
@@ -60,6 +64,7 @@ public class Result<T> {
     public boolean isWait() {
         return status == Status.WAIT;
     }
+    public boolean isInProgress() {return status == Status.IN_PROGRESS;}
 
 
 

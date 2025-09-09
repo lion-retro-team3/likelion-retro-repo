@@ -42,10 +42,6 @@ public class Order {
     }
 
 
-    public void setOrderItemList(List<OrderItem> orderItemList) {
-        this.orderItemList = orderItemList;
-    }
-
     public void setTotalPrice(int totalPrice) {
         this.totalPrice = totalPrice;
     }
@@ -121,8 +117,8 @@ public class Order {
         this.updateTotalPrice();
     }
 
-    public Optional<OrderItem> getOrderItem(OrderItem orderItem) {
-        return this.orderItemList.stream().filter(orderItem1 -> orderItem1.equals(orderItem)).findFirst();
+    public Optional<OrderItem> findItemByProduct(OrderItem orderItem) {
+        return this.orderItemList.stream().filter(item -> item.equals(orderItem)).findFirst();
     }
 
     public boolean isEmptyOrderList() {
@@ -132,6 +128,15 @@ public class Order {
     public void removeOrderItem(OrderItem orderItem) {
 
         this.getOrderItemList().remove(orderItem);
+        this.updateTotalPrice();
+    }
+
+    public void changeItemQuantityByDelta(OrderItem orderItem,int quantity) {
+        if (quantity <= 0) {
+            this.removeOrderItem(orderItem);
+        } else {
+            orderItem.updateOrderQuantity(quantity);
+        }
         this.updateTotalPrice();
     }
 }

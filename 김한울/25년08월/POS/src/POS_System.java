@@ -1,3 +1,4 @@
+import order.OrderService;
 import order.OrderSystem;
 import payment.Cash;
 import payment.Credit;
@@ -5,7 +6,6 @@ import payment.Payment;
 import menu.SystemMenu;
 import order.Order;
 import order.OrderItem;
-import order.OrderService;
 import payment.PaymentType;
 import product.Product;
 import product.ProductService;
@@ -18,12 +18,13 @@ import java.util.*;
 
 public class POS_System {
 
-
+    private final ProductService productService;
     private final PayService payService;
     private final OrderSystem orderSystem;
 
 
     public POS_System() {
+        this.productService = ProductService.getInstance();
         this.payService = new PayService();
         this.orderSystem = new OrderSystem();
     }
@@ -59,6 +60,7 @@ public class POS_System {
                     System.out.println(sb);
                     System.out.println("================================");
                     System.out.println("[재고 확인]");
+                    //todo 재고확인
                     System.out.println(productService.getAllSortedByStockQuantity().toString());
                     System.out.println("================================");
                     sb.setLength(0);
@@ -92,14 +94,12 @@ public class POS_System {
 
 
     private void showOrderLog() {
-        Optional<List<Order>> orderLog = orderService.getOrderLog();
-        orderLog.ifPresentOrElse(
-                logs -> {
-                    System.out.println(logs.toString());
-                }, () -> {
-                    System.out.println("[기록 조회] 현재 기록이 없습니다.");
-                }
-        );
+        List<Order> orderLog = orderSystem.getOrderLog();
+        if (orderLog.isEmpty()) {
+            System.out.println("현재 주문 내역이 없습니다.");
+        } else {
+            System.out.println(orderLog);
+        }
     }
 
     private void showProductList() {
@@ -131,44 +131,42 @@ public class POS_System {
         List<OrderItem> orderItemList = new ArrayList<>();
         Order payOrder = new Order(orderItemList);
 
-        //1.상품 찾기
-        //성공 -> 주문등록
-        //취소 -> 메뉴화면
-        //대기 -> 상품 코드 재입력
-/*        while (true){
-            //상품찾기
-            //주문수량입력
-        }*/
+
         Result<Product> foundProduct;
         while (true) {
+            //1.상품 찾기
+            //성공 -> 주문등록
+            //취소 -> 메뉴화면 or 결제화면
+            //대기 -> 상품 코드 재입력
             foundProduct = orderSystem.selectProductFromInput();
             if (foundProduct.isWait()) {
                 System.out.println(foundProduct.getMsg());
-            } else break;
-
-            //1.상품 찾기 -> Result
-            //TODO if문으로 처리하면 확장, 수정에 너무 어려움 핸들러로 처리
-            if (foundProduct.isCancel()) {
-                System.out.println("[결제] 를 취소합니다. 메인화면으로 돌아갑니다.");
-                return;
             }
 
-            //2.주문수량 입력하기
+            //2.상품 찾기 후 처리
+            //TODO if문으로 처리하면 확장, 수정에 너무 어려움 핸들러로 처리
+            if (foundProduct.isCancel()) {
+                System.out.println("[결제] 상품 선택 취소. 남아있는 주문이 있다면 결제 수단 선택으로 넘어가겠습니다.");
+                break;
+            }
+
+            //3.주문 수량 입력하기
             //성공 -> 등록 결과처리
-            //취소 -> 메뉴화면
+            //취소 -> 1. 상품 찾기
             //실패 -> 재입력
-            Result<OrderItem> newOrderItemResult;
-            orderSystem.temp(payOrder, foundProduct.getData());
-            //주문리스트 등록 결과 처리
-            payOrder.showOrderList();
-            System.out.println("총 지불 금액 : " + payOrder.getTotalPrice() + " 원 입니다.");
+            Result<OrderItem> newOrderItemResult = orderSystem.payProcessCreateOrderItem(foundProduct.getData());
+            if (!newOrderItemResult.isCancel()) {
+                //4.주문 수량 입력 후 처리
+                Result<Order> orderResult = orderSystem.inputOrderQuantityForOrderItem(payOrder, newOrderItemResult.getData());
+                if (orderResult.isCancel()) {
+                    System.out.println("[결제] 를 취소합니다. 상품 선택으로 돌아갑니다.");
+                }
+                payOrder.showOrderList();
+                System.out.println("총 지불 금액 : " + payOrder.getTotalPrice() + " 원 입니다.");
+            }
+
+
         }
-
-
-        //4.결제하기
-        payProcessPayment();
-
-        //Result<Order> orderResult = addOrderItem(payOrder);
 
 
         //결제 방법 선택
@@ -193,7 +191,7 @@ public class POS_System {
 
                         Result<Order> payResult = payService.pay(payOrder, payment, amount);
                         System.out.println(payResult.getMsg());
-                        orderService.saveOrderLog(payOrder);
+                        orderSystem.saveOrderLog(payOrder);
 
                         //결과
                         if (payOrder.isSuccess()) {
@@ -202,7 +200,7 @@ public class POS_System {
                     }, () -> {
                         System.out.println("[결제] 취소를 선택했습니다.");
                         payOrder.cancel();
-                        orderService.saveOrderLog(payOrder);
+                        orderSystem.saveOrderLog(payOrder);
                     }
             );
 
@@ -214,8 +212,5 @@ public class POS_System {
         System.out.println("==================================");
     }
 
-    //상품 결제
-    private void payProcessPayment() {
-    }
 
 }

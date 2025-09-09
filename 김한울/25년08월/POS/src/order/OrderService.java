@@ -15,8 +15,8 @@ public class OrderService {
         this.orderLog = new ArrayList<>();
     }
 
-    public Optional<List<Order>> getOrderLog() {
-        return Optional.ofNullable(orderLog);
+    public List<Order> getOrderLog() {
+        return orderLog;
     }
 
     public void saveOrderLog(Order newOrder) {
@@ -25,20 +25,21 @@ public class OrderService {
 
     public Result<Order> addOrderItemInOrder(Order payOrder, OrderItem newOrderItem) {
 
+        if (newOrderItem.getOrderQuantity() <= 0){
+            return Result.fail("1 이상의 수량을 입력해주세요.",payOrder);
+        }
         payOrder.addOrderItem(newOrderItem);
-
-        return Result.success("성공적으로 주문이 추가되었습니다.\n", payOrder);
+        payOrder.updateTotalPrice();
+        return Result.success("주문이 추가 되었습니다.", payOrder);
     }
 
-    public Result<OrderItem> updateOrderItemInOrder(OrderItem orderItem, int newOrderQuantity) {
+    public Result<Order> updateOrderItemInOrder(Order order,OrderItem orderItem, int delta) {
 
-        int finalQuantity = orderItem.getOrderQuantity() + newOrderQuantity;
-        orderItem.updateOrderQuantity(finalQuantity);
-        return Result.success("성공적으로 주문이 추가되었습니다.\n", orderItem);
+        int finalQuantity = orderItem.getOrderQuantity() + delta;
+        order.changeItemQuantityByDelta(orderItem,finalQuantity);
+        String msg = (finalQuantity <= 0) ? "주문 항목 삭제/감소 처리 완료" : "주문 항목 수량 변경 완료";
+        return Result.success(msg, order);
     }
 
-    public Optional<OrderItem> findOrderItemInOrder(Order payOrder, OrderItem findProduct) {
 
-        return payOrder.getOrderItem(findProduct);
-    }
 }

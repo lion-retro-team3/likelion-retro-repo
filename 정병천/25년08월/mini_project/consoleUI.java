@@ -1,5 +1,6 @@
 package mini_project;
 import mini_project.service.MovieService;
+import mini_project.io.DataFile;
 import mini_project.enums.AgeRating;
 import java.util.Scanner;
 
@@ -13,11 +14,7 @@ public class consoleUI {
 
     // 영화 기본 값 셋팅
     public void initMovie() {
-        service.addMovie("어벤져스-엔드게임", AgeRating.R15,"히어로",12000);
-        service.addMovie("범죄도시", AgeRating.R19,"액션",13000);
-        service.addMovie("겨울왕국", AgeRating.ALL,"애니메이션",10000);
-        service.addMovie("기생충", AgeRating.R15,"드라마",11000);
-        service.addMovie("인터스텔라", AgeRating.R15,"SF",12000);
+        service.dataLoad();
     }
 
     // 돌아가기
@@ -80,6 +77,15 @@ public class consoleUI {
         System.out.println("✅ " + str + " 완료: " + code);
     }
 
+    // 메뉴
+    public void consoleMenu() {
+        printTitle("영화 관리자 시스템");
+        System.out.println("1. 예매 등록            2. 예매 취소");
+        System.out.println("3. 영화 추가            4. 영화 삭제");
+        System.out.println("5. 영화 목록            6. 종료 (저장)");
+        System.out.print("\n메뉴를 선택하세요: ");
+    }
+
     // 예매 등록
     public void reserveFlow() {
         printTitle("예매 등록 : 영화 선택");
@@ -100,7 +106,7 @@ public class consoleUI {
         // 영화 정보 및 영화 좌석 노출
         printTitle("예매 등록 : 좌석 예매");
         service.movieInfo(id);
-        service.movieSeatBorad(id);
+        service.movieSeatBoard(id);
 
         // 좌석 예매
         System.out.println();
@@ -199,6 +205,7 @@ public class consoleUI {
                     }
                 } catch (NumberFormatException e) {
                     printError("입력");
+                    System.out.println(e.getMessage());
                 }
             }
 
@@ -217,6 +224,7 @@ public class consoleUI {
                     break;
                 } catch (NumberFormatException e) {
                     printError("입력");
+                    System.out.println(e.getMessage());
                 }
             }
 
@@ -278,13 +286,16 @@ public class consoleUI {
             // 영화 정보 및 영화 좌석 노출
             printTitle("영화 목록 - 좌석표");
             service.movieInfo(id);
-            service.movieSeatBorad(id);
+            service.movieSeatBoard(id);
             if(!askBack("이전")) break;
         }
     }
 
     // 종료
     public void endFlow() {
+        System.out.println("저장중...");
+        service.dataSave();  // 실제 저장 실행
+        System.out.println("데이터 저장 완료");
         printTitle("시스템을 종료 합니다.");
     }
 

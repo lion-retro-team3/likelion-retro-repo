@@ -4,6 +4,7 @@ import mini_project.model.Movie;
 import mini_project.enums.AgeRating;
 import mini_project.control.MovieController;
 import mini_project.control.SeatController;
+import mini_project.io.DataFile;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -26,14 +27,29 @@ public class MovieService {
      * @param genre 장르
      * @param price 가격
      */
-    public void addMovie(String title, String type, String genre, int price) {
+    public String addMovie(String title, String type, String genre, int price) {
         String returnId = movieCtrl.addMovie(title, type, genre, price);
         allMap.put(returnId, new SeatController()); // key:영화id | val:좌석(생성)
+        return returnId;
+
     }
     // enum으로 받는 경우 확장
-    public void addMovie(String title, AgeRating type, String genre, int price) {
+    public String addMovie(String title, AgeRating type, String genre, int price) {
         String returnId = movieCtrl.addMovie(title, type.getLabel(), genre, price);
         allMap.put(returnId, new SeatController());
+        return returnId;
+    }
+
+    public Map<String, SeatController> getAllMap() {
+        return allMap;
+    }
+
+    public Map<String, SeatController> getReservedMap() {
+        return reservedMap;
+    }
+
+    public MovieController getMovieCtrl() {
+        return movieCtrl;
     }
 
     /**
@@ -118,7 +134,7 @@ public class MovieService {
      * 해당영화 좌석표 출력
      * @param id 영화 고유 아이디
      */
-    public void movieSeatBorad(String id) {
+    public void movieSeatBoard(String id) {
         System.out.println("┌───────────────────────────────────────┐");
         System.out.println("│                Screen                 │");
         System.out.println("└───────────────────────────────────────┘");
@@ -143,7 +159,7 @@ public class MovieService {
      */
     public void reservedSeatBoard(String id) {
         SeatController seat = allMap.get(id);
-        seat.getReserveList();
+        System.out.println(seat.getReservedSeat());
     }
 
     /**
@@ -166,8 +182,9 @@ public class MovieService {
 
     /**
      * 보드에서 해당영화 선택
+     * @param caseStr 호출케이스
      * @param num 영화목록 번호
-     * @return movie.getId()
+     * @return 영화ID값
      */
     public String selectMovie(String caseStr, String num) {
         int idx = Integer.parseInt(num) - 1;
@@ -225,7 +242,12 @@ public class MovieService {
         return cancelCheck;
     }
 
-//    public boolean SeatsCode(String id, String code) {
-//        return false;
-//    }
+    public void dataLoad() {
+        DataFile.load(this);
+    }
+
+    public void dataSave() {
+        DataFile.save(this);
+    }
+
 }

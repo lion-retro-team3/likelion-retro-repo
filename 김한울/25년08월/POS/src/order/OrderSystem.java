@@ -1,6 +1,8 @@
 package order;
 
-import product.Product;
+import order.domain.Order;
+import order.domain.OrderItem;
+import product.domain.Product;
 import product.ProductService;
 import util.Input;
 import util.Result;
@@ -36,7 +38,7 @@ public class OrderSystem {
             return Result.wait("[결제] 유효하지 않은 코드 입니다.", null);
         }
         productByCode = byCode.get();
-        return Result.success("[결제] 상품코드 " + productByCode.getCode() + " 를 입력하셨습니다.", productByCode);
+        return Result.success("[결제] 상품코드 " + productByCode.getId() + " 를 입력하셨습니다.", productByCode);
     }
 
     public Result<OrderItem> payProcessCreateOrderItem(Product product) {

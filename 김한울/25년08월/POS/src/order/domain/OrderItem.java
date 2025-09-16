@@ -1,6 +1,6 @@
-package order;
+package order.domain;
 
-import product.Product;
+import product.domain.Product;
 
 import java.util.Objects;
 
@@ -35,7 +35,7 @@ public class OrderItem {
 
     @Override
     public String toString() {
-        return "상품 코드 : " + product.getCode() +
+        return "상품 코드 : " + product.getId() +
                 "\t주문 상품 : " + product.getName() +
                 "\t상품 가격 : " +product.getPrice() +
                 "\t요청 수량 : " + this.getOrderQuantity() +

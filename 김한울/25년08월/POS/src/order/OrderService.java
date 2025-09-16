@@ -1,11 +1,11 @@
 package order;
 
-import product.Product;
+import order.domain.Order;
+import order.domain.OrderItem;
 import util.Result;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class OrderService {
 

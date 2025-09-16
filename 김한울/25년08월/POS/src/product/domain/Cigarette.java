@@ -1,4 +1,4 @@
-package product;
+package product.domain;
 
 public class Cigarette extends Product{
 

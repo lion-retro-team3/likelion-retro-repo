@@ -1,10 +1,10 @@
-package product;
+package product.domain;
 
 import java.util.Objects;
 
 public abstract class Product {
 
-    private final Long code;
+    private final Long id;
     private String name;
     private int price;
     private int stockQuantity;
@@ -12,15 +12,15 @@ public abstract class Product {
 
     //code 는 setter 없음  idSequence 로 자동 할당.
     public Product(String name, int price, int stockQuantity) {
-        this.code = idSequence++;
+        this.id = idSequence++;
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
 
     }
 
-    public Long getCode() {
-        return code;
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -50,7 +50,7 @@ public abstract class Product {
     @Override
     public String toString() {
         return
-                "제품 번호 : " + code +
+                "제품 번호 : " + id +
                 "\t제품명 : '" + name + '\'' +
                 "\t가격 : " + price +
                 "\t재고 수량 : " + stockQuantity + "\n";
@@ -61,12 +61,12 @@ public abstract class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return price == product.price && Objects.equals(code, product.code) && Objects.equals(name, product.name);
+        return price == product.price && Objects.equals(id, product.id) && Objects.equals(name, product.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, name, price);
+        return Objects.hash(id, name, price);
     }
 
     public boolean decreaseStock(int quantity){

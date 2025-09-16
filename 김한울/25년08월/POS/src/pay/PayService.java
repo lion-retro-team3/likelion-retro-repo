@@ -1,7 +1,7 @@
 package pay;
 
 import payment.Payment;
-import order.Order;
+import order.domain.Order;
 import util.Result;
 
 public class PayService {

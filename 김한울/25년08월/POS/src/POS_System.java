@@ -1,13 +1,12 @@
-import order.OrderService;
 import order.OrderSystem;
 import payment.Cash;
 import payment.Credit;
 import payment.Payment;
 import menu.SystemMenu;
-import order.Order;
-import order.OrderItem;
+import order.domain.Order;
+import order.domain.OrderItem;
 import payment.PaymentType;
-import product.Product;
+import product.domain.Product;
 import product.ProductService;
 import util.Result;
 import pay.PayService;

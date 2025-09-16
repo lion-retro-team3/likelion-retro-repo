@@ -1,7 +1,6 @@
 package product;
 
-import product.Product;
-import repository.ProductRepo;
+import product.domain.Product;
 
 import java.util.*;
 
@@ -31,7 +30,7 @@ public class ProductService {
     }
 
     public List<Product> getAllSortedByCode() {
-        List<Product> values = productMap.values().stream().sorted(Comparator.comparing(Product::getCode)).toList();
+        List<Product> values = productMap.values().stream().sorted(Comparator.comparing(Product::getId)).toList();
         return values;
     }
 
@@ -45,7 +44,5 @@ public class ProductService {
         return values;
     }
 
-    public void createInit() {
-        ProductRepo.initTestProduct(this.productMap);
-    }
+
 }

@@ -1,7 +1,5 @@
-package order;
+package order.domain;
 
-import product.Product;
-import util.Result;
 import util.Status;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package product;
+package product.domain;
 
 public class Snack extends Product{
 

@@ -1,10 +1,21 @@
 package pay;
 
+import order.OrderService;
 import payment.Payment;
 import order.domain.Order;
 import util.Result;
 
 public class PayService {
+
+    private static final PayService INSTANCE = new PayService();
+
+    public static PayService getInstance()
+    {
+        return INSTANCE;
+    }
+
+    private PayService() {
+    }
 
     //결제
     public Result<Order> pay(Order order, Payment method,int tryAmount){

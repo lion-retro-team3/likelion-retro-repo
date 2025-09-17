@@ -1,5 +1,6 @@
 package order.repository;
 
+import order.OrderService;
 import order.domain.Order;
 import order.domain.OrderItem;
 import util.DBUtil;
@@ -15,8 +16,14 @@ import java.util.List;
 public class OrderRepositoryImpl implements OrderRepository {
 
     private final OrderItemRepository orderItemRepository;
+    private static final OrderRepository INSTANCE = new OrderRepositoryImpl(OrderItemRepositoryImpl.getInstance());
 
-    public OrderRepositoryImpl(OrderItemRepository orderItemRepository) {
+    public static OrderRepository getInstance()
+    {
+        return INSTANCE;
+    }
+
+    private OrderRepositoryImpl(OrderItemRepository orderItemRepository) {
         this.orderItemRepository = orderItemRepository;
     }
 
@@ -119,17 +126,14 @@ public class OrderRepositoryImpl implements OrderRepository {
 
     private Order getOrder(ResultSet resultSet) throws SQLException {
         Order order = null;
-        if (resultSet.next()) {
-            long orderId = resultSet.getLong("id");
-            String orderStatus = resultSet.getString("status");
-            int orderTotalPrice = resultSet.getInt("total_price");
-            List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
+        long orderId = resultSet.getLong("id");
+        String orderStatus = resultSet.getString("status");
+        int orderTotalPrice = resultSet.getInt("total_price");
+        List<OrderItem> orderItemList = orderItemRepository.findByOrderId(orderId);
 
 
-            Status status = Status.fromString(orderStatus);
-            order = new Order(orderId, orderItemList, status, orderTotalPrice);
-
-        }
+        Status status = Status.fromString(orderStatus);
+        order = new Order(orderId, orderItemList, status, orderTotalPrice);
 
         return order;
     }

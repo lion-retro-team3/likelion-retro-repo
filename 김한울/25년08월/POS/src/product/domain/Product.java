@@ -8,19 +8,22 @@ public abstract class Product {
     private String name;
     private int price;
     private int stockQuantity;
+    private String category;
 
-    public Product(Long id, String name, int price, int stockQuantity) {
+    public Product(Long id, String name, int price, int stockQuantity, String category) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.category = category;
 
     }
 
-    public Product(String name, int price, int stockQuantity) {
+    public Product(String name, int price, int stockQuantity, String category) {
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
+        this.category = category;
     }
 
 
@@ -50,6 +53,10 @@ public abstract class Product {
 
     private void setStockQuantity(int stockQuantity) {
         this.stockQuantity = stockQuantity;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     @Override

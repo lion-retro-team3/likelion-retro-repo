@@ -13,6 +13,15 @@ import java.util.List;
 
 public class ProductRepository {
 
+    private static final ProductRepository productRepository = new ProductRepository();
+
+    public static ProductRepository getInstance() {
+        return productRepository;
+    }
+
+    private ProductRepository() {
+    }
+
     public List<Product> findProductList() {
 
         List<Product> productList = new ArrayList<>();
@@ -47,6 +56,7 @@ public class ProductRepository {
             connection = DBUtil.getConnection();
             preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setLong(1, id);
+
             resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 product = getProduct(resultSet);
@@ -139,15 +149,14 @@ public class ProductRepository {
 
     private Product getProduct(ResultSet resultSet) throws SQLException {
         Product product = null;
-        if (resultSet.next()) {
-            long id = resultSet.getLong("id");
-            String name = resultSet.getString("name");
-            int price = resultSet.getInt("price");
-            int stockQuantity = resultSet.getInt("stockQuantity");
+        long id = resultSet.getLong("id");
+        String name = resultSet.getString("name");
+        int price = resultSet.getInt("price");
+        int stockQuantity = resultSet.getInt("stock_quantity");
 
-            String category = resultSet.getString("category");
-            product = ProductFactory.createProduct(id, name, price, stockQuantity, category);
-        }
+        String category = resultSet.getString("category");
+        product = ProductFactory.createProduct(id, name, price, stockQuantity, category);
+
         return product;
     }
 

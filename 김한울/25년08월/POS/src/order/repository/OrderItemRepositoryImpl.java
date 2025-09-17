@@ -1,5 +1,6 @@
 package order.repository;
 
+import order.OrderService;
 import order.domain.OrderItem;
 import product.domain.Product;
 import product.repository.ProductRepository;
@@ -14,9 +15,15 @@ import java.util.List;
 
 public class OrderItemRepositoryImpl implements OrderItemRepository {
 
+    private static final OrderItemRepository INSTANCE = new OrderItemRepositoryImpl(ProductRepository.getInstance());
     private final ProductRepository productRepository;
 
-    public OrderItemRepositoryImpl(ProductRepository productRepository) {
+    public static OrderItemRepository getInstance()
+    {
+        return INSTANCE;
+    }
+
+    private OrderItemRepositoryImpl(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
 
@@ -155,16 +162,15 @@ public class OrderItemRepositoryImpl implements OrderItemRepository {
 
     private OrderItem getOrderItem(ResultSet resultSet) throws SQLException {
         OrderItem orderItem = null;
-        if (resultSet.next()) {
-            long id = resultSet.getLong("id");
-            long orderId = resultSet.getLong("order_id");
-            long productId = resultSet.getLong("product_id");
-            Product byId = productRepository.findById(productId);
-            int orderQuantity = resultSet.getInt("quantity");
+
+        long id = resultSet.getLong("id");
+        long orderId = resultSet.getLong("order_id");
+        long productId = resultSet.getLong("product_id");
+        Product byId = productRepository.findById(productId);
+        int orderQuantity = resultSet.getInt("quantity");
 
 
-            orderItem = new OrderItem(id,orderId, orderQuantity, byId);
-        }
+        orderItem = new OrderItem(id,orderId, orderQuantity, byId);
         return orderItem;
     }
 

@@ -5,14 +5,12 @@ import product.domain.Beverage;
 import product.domain.Product;
 import product.domain.Snack;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Supplier;
 
 public class ProductFactory {
 
+    //from db
     public static Product createProduct(long id, String name, int price, int stockQuantity, String category) {
+
 
         switch (category) {
             case "alcohol":
@@ -27,7 +25,12 @@ public class ProductFactory {
 
     }
 
+    //from controller
     public static Product createProduct(String name, int price, int stockQuantity, String category) {
+
+        if (price <= 0 || stockQuantity <= 0) {
+            return null;
+        }
 
         switch (category) {
             case "alcohol":

@@ -1,44 +1,56 @@
 package product;
 
 import product.domain.Product;
+import product.dto.ProductDTO;
+import product.repository.ProductRepository;
 
 import java.util.*;
 
 public class ProductService {
 
-    private static final ProductService INSTANCE = new ProductService();
+    private static final ProductService INSTANCE = new ProductService(ProductRepository.getInstance());
 
     public static ProductService getInstance()
     {
         return INSTANCE;
     }
-    private Map<Long, Product> productMap; //물건 리스트
 
-    private ProductService() {
-        this.productMap = new HashMap<>();
+    private final ProductRepository productRepository;
+
+    private ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
     }
 
 
 
-    public Optional<Product> findByCode(Long code) {
+    public Product findById(Long id) {
 
-        Product product = productMap.get(code);
-        return Optional.ofNullable(productMap.get(code));
+        Product product = productRepository.findById(id);
+        if (product == null) return null;
+        return product;
     }
 
-    public List<Product> getAllSortedByCode() {
-        List<Product> values = productMap.values().stream().sorted(Comparator.comparing(Product::getId)).toList();
-        return values;
+    public List<Product> getAllSortedById() {
+        List<Product> productList = productRepository.findProductList();
+        productList.sort(Comparator.comparing(Product::getId));
+
+        return productList;
     }
 
     public List<Product> getAllSortedByPrice() {
-        List<Product> values = productMap.values().stream().sorted(Comparator.comparing(Product::getPrice)).toList();
-        return values;
+
+        List<Product> productList = productRepository.findProductList();
+        productList.sort(Comparator.comparing(Product::getPrice));
+
+
+        return productList;
     }
 
     public List<Product> getAllSortedByStockQuantity() {
-        List<Product> values = productMap.values().stream().sorted(Comparator.comparing(Product::getStockQuantity)).toList();
-        return values;
+
+        List<Product> productList = productRepository.findProductList();
+        productList.sort(Comparator.comparing(Product::getStockQuantity));
+        return productList;
     }
 
 

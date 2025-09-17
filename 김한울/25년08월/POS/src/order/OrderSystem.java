@@ -50,7 +50,7 @@ public class OrderSystem {
         }
         //정수 변환
         int quantityInt = Integer.parseInt(inputQuantity);
-        orderItem = new OrderItem(product, quantityInt);
+        orderItem = new OrderItem(quantityInt, product);
         return Result.success("[결제] 해당 주문 확인 중", orderItem);
     }
 
@@ -78,7 +78,7 @@ public class OrderSystem {
             } else {
                 Result<Order> payOrderResult = orderService.addOrderItemInOrder(payOrder, orderItem);
                 System.out.println(payOrderResult.getMsg());
-                if (payOrderResult.isSuccess()){
+                if (payOrderResult.isSuccess()) {
                     return payOrderResult;
                 }
             }

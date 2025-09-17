@@ -16,9 +16,6 @@ public class ProductService {
 
     private ProductService() {
         this.productMap = new HashMap<>();
-        System.out.println("just one thing");
-        this.createInit();
-
     }
 
 

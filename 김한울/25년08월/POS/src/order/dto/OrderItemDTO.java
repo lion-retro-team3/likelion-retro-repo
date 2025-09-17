@@ -1,6 +1,7 @@
 package order.dto;
 
 public class OrderItemDTO {
+
     private final Long id;
     private final Long orderId;
     private final Long productId;
@@ -14,4 +15,5 @@ public class OrderItemDTO {
         this.quantity = quantity;
         this.price = price;
     }
+
 }

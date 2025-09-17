@@ -4,20 +4,25 @@ import java.util.Objects;
 
 public abstract class Product {
 
-    private final Long id;
+    private Long id;
     private String name;
     private int price;
     private int stockQuantity;
-    private static Long idSequence =1L;
 
-    //code 는 setter 없음  idSequence 로 자동 할당.
-    public Product(String name, int price, int stockQuantity) {
-        this.id = idSequence++;
+    public Product(Long id, String name, int price, int stockQuantity) {
+        this.id = id;
         this.name = name;
         this.price = price;
         this.stockQuantity = stockQuantity;
 
     }
+
+    public Product(String name, int price, int stockQuantity) {
+        this.name = name;
+        this.price = price;
+        this.stockQuantity = stockQuantity;
+    }
+
 
     public Long getId() {
         return id;

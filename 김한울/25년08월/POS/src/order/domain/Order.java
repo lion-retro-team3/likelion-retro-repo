@@ -7,24 +7,30 @@ import java.util.Optional;
 
 public class Order {
 
-    private final Long orderId;
+    private Long id;
     private List<OrderItem> orderItemList;
     private int totalPrice;
     private Status status;
 
-    private static Long idSequence = 1L;
 
+    //DB
+    public Order(Long id, List<OrderItem> orderItemList, Status status, int totalPrice) {
+        this.id = id;
+        this.orderItemList = orderItemList;
+        this.totalPrice = totalPrice;
+        this.status = status;
+    }
 
+    //서비스 클래스
     public Order(List<OrderItem> orderItemList) {
-        this.orderId = idSequence++;
         this.orderItemList = orderItemList;
         this.totalPrice = this.updateTotalPrice(orderItemList);
         this.status = Status.WAIT;
     }
 
 
-    public Long getOrderId() {
-        return orderId;
+    public Long getId() {
+        return id;
     }
 
     public List<OrderItem> getOrderItemList() {
@@ -65,7 +71,7 @@ public class Order {
     @Override
     public String toString() {
         return "주문 : \n" +
-                "\t상품 번호 : " + orderId +
+                "\t상품 번호 : " + id +
                 "\n상품 목록 : " + orderItemList +
                 "\t총 금액 : " + totalPrice +
                 "\t주문 결과 : " + status.getDescription() + "\n";

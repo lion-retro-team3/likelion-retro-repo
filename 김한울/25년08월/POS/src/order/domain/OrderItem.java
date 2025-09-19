@@ -1,16 +1,31 @@
-package order;
+package order.domain;
 
-import product.Product;
+import product.domain.Product;
 
 import java.util.Objects;
 
 public class OrderItem {
+    private Long id;
+    private Long  orderId;
     private Product product;
     private int orderQuantity;
 
-    public OrderItem(Product product, int orderQuantity) {
-        this.product = product;
+    public OrderItem(Long id, Long  orderId, int orderQuantity, Product product) {
+        this.id = id;
+        this.orderId = orderId;
         this.orderQuantity = orderQuantity;
+        this.product = product;
+    }
+
+
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public Long getOrderId() {
+        return orderId;
     }
 
     public Product getProduct() {
@@ -21,6 +36,7 @@ public class OrderItem {
         this.product = product;
     }
 
+
     public int getOrderQuantity() {
         return this.orderQuantity;
     }
@@ -29,19 +45,19 @@ public class OrderItem {
         this.orderQuantity = orderQuantity;
     }
 
-    public int getOrderPrice(){
+    public int getOrderPrice() {
         return product.getPrice() * this.getOrderQuantity();
     }
 
     @Override
     public String toString() {
-        return "상품 코드 : " + product.getCode() +
+        return "상품 코드 : " + product.getId() +
                 "\t주문 상품 : " + product.getName() +
-                "\t상품 가격 : " +product.getPrice() +
+                "\t상품 가격 : " + product.getPrice() +
                 "\t요청 수량 : " + this.getOrderQuantity() +
                 "\t|\t" +
-                "\t지불 금액 : " + this.getOrderPrice() +"\n";
-                
+                "\t지불 금액 : " + this.getOrderPrice() + "\n";
+
     }
 
     @Override

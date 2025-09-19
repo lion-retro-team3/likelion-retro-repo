@@ -17,4 +17,21 @@ public enum Status {
         return description;
     }
 
+    public static Status fromString(String value) {
+        switch (value) {
+            case "WAIT":
+                return WAIT;
+            case "SUCCESS":
+                return SUCCESS;
+            case "FAIL":
+                return FAIL;
+            case "IN_PROGRESS":
+                return IN_PROGRESS;
+            case "CANCEL":
+                return CANCEL;
+            default:
+                return null;
+        }
+    }
+
 }

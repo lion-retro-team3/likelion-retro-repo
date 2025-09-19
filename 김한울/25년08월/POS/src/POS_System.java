@@ -1,20 +1,18 @@
-import order.OrderService;
 import order.OrderSystem;
 import payment.Cash;
 import payment.Credit;
 import payment.Payment;
 import menu.SystemMenu;
-import order.Order;
-import order.OrderItem;
+import order.domain.Order;
+import order.domain.OrderItem;
 import payment.PaymentType;
-import product.Product;
 import product.ProductService;
+import product.dto.ProductDTO;
 import util.Result;
 import pay.PayService;
 import util.Input;
 
 import java.util.*;
-
 
 public class POS_System {
 
@@ -22,10 +20,9 @@ public class POS_System {
     private final PayService payService;
     private final OrderSystem orderSystem;
 
-
     public POS_System() {
         this.productService = ProductService.getInstance();
-        this.payService = new PayService();
+        this.payService = PayService.getInstance();
         this.orderSystem = new OrderSystem();
     }
 
@@ -103,7 +100,7 @@ public class POS_System {
     }
 
     private void showProductList() {
-        System.out.println(productService.getAllSortedByCode().toString());
+        System.out.println(productService.getAllSortedById().toString());
     }
 
     public void showSystemMenu() {
@@ -131,8 +128,7 @@ public class POS_System {
         List<OrderItem> orderItemList = new ArrayList<>();
         Order payOrder = new Order(orderItemList);
 
-
-        Result<Product> foundProduct;
+        Result<ProductDTO> foundProduct;
         while (true) {
             //1.상품 찾기
             //성공 -> 주문등록
@@ -156,6 +152,7 @@ public class POS_System {
             //실패 -> 재입력
             Result<OrderItem> newOrderItemResult = orderSystem.payProcessCreateOrderItem(foundProduct.getData());
             if (!newOrderItemResult.isCancel()) {
+
                 //4.주문 수량 입력 후 처리
                 Result<Order> orderResult = orderSystem.inputOrderQuantityForOrderItem(payOrder, newOrderItemResult.getData());
                 if (orderResult.isCancel()) {
@@ -191,7 +188,7 @@ public class POS_System {
 
                         Result<Order> payResult = payService.pay(payOrder, payment, amount);
                         System.out.println(payResult.getMsg());
-                        orderSystem.saveOrderLog(payOrder);
+                        orderSystem.saveOrder(payOrder);
 
                         //결과
                         if (payOrder.isSuccess()) {
@@ -200,7 +197,7 @@ public class POS_System {
                     }, () -> {
                         System.out.println("[결제] 취소를 선택했습니다.");
                         payOrder.cancel();
-                        orderSystem.saveOrderLog(payOrder);
+                        orderSystem.saveOrder(payOrder);
                     }
             );
 

@@ -13,7 +13,7 @@ import java.util.Set;
 public class Movie {
     private String id;          // 영화 고유 ID
     private String title;       // 영화명
-    private String type;        // 등급
+    private String type;        // 관람등급
     private String genre;       // 장르
     private int price;          // 가격
 

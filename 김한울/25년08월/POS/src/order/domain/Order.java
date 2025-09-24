@@ -1,0 +1,146 @@
+package order.domain;
+
+import util.Status;
+
+import java.util.List;
+import java.util.Optional;
+
+public class Order {
+
+    private Long id;
+    private List<OrderItem> orderItemList;
+    private int totalPrice;
+    private Status status;
+
+
+    //DB
+    public Order(Long id, List<OrderItem> orderItemList, Status status, int totalPrice) {
+        this.id = id;
+        this.orderItemList = orderItemList;
+        this.totalPrice = totalPrice;
+        this.status = status;
+    }
+
+    //서비스 클래스
+    public Order(List<OrderItem> orderItemList) {
+        this.orderItemList = orderItemList;
+        this.totalPrice = this.updateTotalPrice(orderItemList);
+        this.status = Status.WAIT;
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public List<OrderItem> getOrderItemList() {
+        return orderItemList;
+    }
+
+    public int getTotalPrice() {
+        return totalPrice;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    private void setStatus(Status status) {
+        this.status = status;
+    }
+
+    private int updateTotalPrice(List<OrderItem> orderItemList) {
+        int sum = 0;
+        for (OrderItem orderItem : orderItemList) {
+            sum += orderItem.getOrderPrice();
+        }
+        this.setTotalPrice(sum);
+        return sum;
+    }
+
+    public int updateTotalPrice() {
+        return this.updateTotalPrice(this.orderItemList);
+    }
+
+
+    @Override
+    public String toString() {
+        return "주문 : \n" +
+                "\t상품 번호 : " + id +
+                "\n상품 목록 : " + orderItemList +
+                "\t총 금액 : " + totalPrice +
+                "\t주문 결과 : " + status.getDescription() + "\n";
+    }
+
+    public void showOrderList() {
+        StringBuilder sb = new StringBuilder();
+        for (OrderItem orderItem : orderItemList) {
+            sb.append("결제 품목 -> ").append(orderItem.toString());
+        }
+        System.out.println("[결제 현황]=====================================");
+        if (!sb.isEmpty()) System.out.println(sb);
+        else System.out.println("결제할 상품을 등록해주세요.");
+        System.out.println("=====================================");
+    }
+
+    public boolean hasOrderItemList() {
+        return !orderItemList.isEmpty();
+    }
+
+    public void confirm() {
+        orderItemList.forEach(orderItem -> {
+            int orderQuantity = orderItem.getOrderQuantity();
+            orderItem.getProduct().decreaseStock(orderQuantity);
+        });
+        this.success();
+    }
+
+    public void fail() {
+        this.setStatus(Status.FAIL);
+    }
+
+    public void cancel() {
+        this.setStatus(Status.CANCEL);
+    }
+
+    public void success() {
+        this.setStatus(Status.SUCCESS);
+    }
+
+    public boolean isSuccess() {
+        return this.getStatus() == Status.SUCCESS;
+    }
+
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItemList.add(orderItem);
+        this.updateTotalPrice();
+    }
+
+    public Optional<OrderItem> findItemByProduct(OrderItem orderItem) {
+        return this.orderItemList.stream().filter(item -> item.equals(orderItem)).findFirst();
+    }
+
+    public boolean isEmptyOrderList() {
+        return this.getOrderItemList().isEmpty();
+    }
+
+    public void removeOrderItem(OrderItem orderItem) {
+
+        this.getOrderItemList().remove(orderItem);
+        this.updateTotalPrice();
+    }
+
+    public void changeItemQuantityByDelta(OrderItem orderItem,int quantity) {
+        if (quantity <= 0) {
+            this.removeOrderItem(orderItem);
+        } else {
+            orderItem.updateOrderQuantity(quantity);
+        }
+        this.updateTotalPrice();
+    }
+}

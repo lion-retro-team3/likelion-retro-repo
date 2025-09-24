@@ -1,9 +1,9 @@
-## 미니 프로젝트 : 콘솔 영화 관리 시스템
+## 미니 프로젝트 : 콘솔 영화 관리자 시스템
 
 
 ### 1. 프로젝트 개요
 
-**프로젝트 명**: 콘솔 영화 관리 시스템
+**프로젝트 명**: 콘솔 영화 관리자 시스템
 
 **목표**
 
@@ -29,7 +29,7 @@
 
 1.  **예매 등록**: 영화 선택 → 좌석 입력 → 유효성체크 → 예매등록 처리 구현합니다. 
 2.  **예매 취소**: 예매된 영화 선택 → 예매 좌석 입력 → 체크 → 예매취소 처리 구현합니다.
-3.  **영화 등록**: 영화 제목,장르,등급,가격 단계별 입력 진행하여 입력값 바탕으로 영화 정보를 추가합니다.
+3.  **영화 추가**: 영화 제목,장르,등급,가격 단계별 입력 진행하여 입력값 바탕으로 영화 정보를 추가합니다.
 4.  **영화 삭제**: 영화 목록에서 해당 영화를 선택하여 정보를 삭제합니다. 
 5.  **영화 목록**: 등록된 모든 영화 목록을 보여주고 영화를 선택하여 해당 좌석 정보를 제공합니다.
 6.  **종료**: 프로그램을 종료합니다.
@@ -43,30 +43,48 @@
 mini_project
     │ 
     ├─ control
-    │   ├─ MovieController.java
-    │   └─ SeatController.java
+    │   ├─ MovieController.java     # 영화 데이터 관리
+    │   └─ SeatController.java      # 좌석 데이터 관리
     │
     ├─ enums
-    │   └─ AgeRating.java
+    │   └─ AgeRating.java           # 영화 관람등급
     │
     ├─ model
-    │   └─ Movie.java
+    │   └─ Movie.java               # 영화 생성
     │
     ├─ service
-    │   └─ MovieService.java
+    │   └─ MovieService.java        # 영화-좌석 매핑 및 전체 기능 관리
     │
-    ├─ MovieMain.java
-    └─ consoleUI.java
+    ├─ MovieMain.java               # 실행
+    └─ consoleUI.java               # 콘솔 입력에 따른 업무진행 흐름
 ```
 ---
 
 ### 4. 클래스 설계
 
-클래스 설계는 각 역할에 맞게 나눕니다.
+
+```bash
+        MovieMain   # 실행
+            ↑ 
+        consoleUI   # 메뉴 흐름 진행
+            ↑ 
+        MovieService  ←  (AgeRating)  # 전체 기능 관리 <- 관람등급 관련 이넘 사용
+            ↑ 
+     ┌───────────────┐
+     │               │
+MovieController   SeatController  # 각 데이터 관리
+     ↑ 
+   Movie # 영화생성
+
+```
+
+
+<br/>
 
 #### 4.1. `Moive` 클래스
 
-**역할**: 영화를 생성하는 클래스입니다.
+>[!NOTE] 
+>**역할**: 영화를 생성하는 클래스입니다.
 
 * **속성 (Fields)**
 
@@ -83,9 +101,12 @@ mini_project
     * `toString()`, `equals(Obj)` , `hashCode()` 오버라이딩 
 
 
+<br/><br/>
+
 #### 4.2. `AgeRating` enum
 
-**역할**: 영화 관람 등급을 사전에 정의합니다.
+>[!NOTE] 
+> **역할**: 영화 관람 등급을 사전에 정의합니다.
 
 * **속성 (Fields)**
 
@@ -104,10 +125,12 @@ mini_project
     * `getCodeArray()`: 코드 배열로 가공 후 전달
     * `getLabelArray()`: 라벨 배열로 가공 후 전달
 
+<br/><br/>
 
 #### 4.3. `MovieController` 클래스
 
-**역할**: 영화 데이터를 관리하는 클래스입니다.
+>[!NOTE] 
+> **역할**: 영화 데이터를 관리하는 클래스입니다.
 
 * **속성 (Fields)**
 
@@ -128,10 +151,11 @@ mini_project
     * `getMovieMap()`: moiveMap 접근 허용
 
 
+<br/><br/>
 
 #### 4.4. `SeatController` 클래스
 
-**역할**: 좌석 배열생성 및 관리하는 클래스입니다.
+>[!NOTE] **역할**: 좌석 배열생성 및 관리하는 클래스입니다.
 
 * **속성 (Fields)**
 
@@ -158,10 +182,12 @@ mini_project
     * `getLeftCount()`: 남은 좌석 수 전달
     * `getSeatMap()`: seatMap 접근 허용
 
+<br/><br/>
 
 #### 4.5. `MovieService` 클래스
 
-**역할**: 각 영화id에 좌석객체 매핑하고 전체적인 기능을 제공합니다.
+>[!NOTE] 
+> **역할**: 각 영화id에 좌석객체 매핑하고 전체적인 기능을 제공합니다.
 
 * **속성 (Fields)**
 
@@ -182,7 +208,7 @@ mini_project
     * `movieTotal()`: 총 영화 수 전달
     * `MovieBoard()`: 영화 전체 목록 출력
     * `reservedMovieBoard()`: 예매된 영화 목록 출력
-    * `movieSeatBorad(id)`: 해당 영화 좌석표 출력
+    * `movieSeatBoard(id)`: 해당 영화 좌석표 출력
     * `movieInfo(id)`:  해당 영화 정보 출력
     * `selectMovie(str,num)` : 목록번호 기반 case별 해당 영화 id 전달
         - 읽기,예매 = 영화목록 기준
@@ -190,10 +216,12 @@ mini_project
     * `reserveSeat(id,code)` : 해당 영화 내 좌석번호 값 예매 등록
     * `cancelSeat(id,code)` : 해당 영화 내 좌석번호 값 예매 취소
 
+<br/><br/>
     
 #### 4.5. `consoleUI` 클래스
 
-**역할**: 콘솔 환경에서 사용자 입력에 따른 메뉴 흐름을 제어하는 클래스입니다.  
+>[!NOTE] 
+> **역할**: 콘솔 환경에서 사용자 입력에 따른 메뉴 흐름을 제어하는 클래스입니다.  
 
 * **속성 (Fields)**
 
@@ -220,10 +248,29 @@ mini_project
         * `listFlow()` : 영화 목록
         * `endFlow()` : 종료 (프린트하나)
 
+<br/><br/>
     
 #### 4.5. `MovieMain` 클래스
 
-**역할** :  main 실행 클래스 
+>[!NOTE] 
+> **역할** :  main 실행 클래스 
 
 * `main()` : 선택 값에 따른 메뉴 케이스 진행
+
+---
+
+### 5. 피드백
+
+* `AgeRating` - 연관성 고려
+    - 현재 : 임포트 되어 있는 부분이 consoleUI, MoiveSerive 두개에만 되어있음.
+    - 개석 : 직접 정보 연관된 Movie에는 해당 이넘을 사용 권장. 연관성에 대해 생각을 해볼 필요 있음
+
+* `SeatController` - 책임분리
+    - 현재 : 좌석 배열 생성 + 예약 로직까지 담당하는 이중 책임을 가짐 (단일책임 위반)
+    - 개선 : 무비처럼 Seat 클래스 따로 만들어서 책임 분리 필요함
+
+* `MovieService` - 확장성 고려
+    - 현재 : 영화ID-좌석 매핑 되어 있으나 확장성에 대해 막혀 있음
+    - 개선 : 상영관 등 확장할 만한 구현체 추가 등 확장에 대해 깊게 생각할 필요가 있다.
+
 

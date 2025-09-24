@@ -166,7 +166,6 @@ console.log("===7번===");
 // 그리고 계산 결과를 예쁘게 출력하는 함수도 만드세요
 // 예: "10 + 5 = 15"
 
-
 const calculator = {
   add(x, y) {
     return x + y;
@@ -182,8 +181,6 @@ const calculator = {
     return x / y;
   },
 };
-
-
 
 function printCal(expression) {
   let x, y, operator, result;
@@ -211,13 +208,44 @@ function printCal(expression) {
   return `${x} ${operator} ${y} = ${result}`;
 }
 
-
 console.log(printCal("10+5"));
 console.log(printCal("10-5"));
 console.log(printCal("10*5"));
 console.log(printCal("10/5"));
 console.log(printCal("10/0"));
 
+console.log(printCal("===8번==="));
 
+// 도서관 시스템을 만들어보세요
+// 1. 책 객체들이 담긴 배열을 만드세요 (제목, 저자, 출간년도, 대여 상태)
+// 2. 책 제목으로 검색하는 함수를 만드세요
+// 3. 대여 가능한 책들의 제목만 출력하는 함수를 만드세요
+// 4. 새 책을 추가하는 함수를 만드세요
 
+const books = [
+  { title: "B1", author: "a1", pubyear: 2025, isRent: false },
+  { title: "B2", author: "a2", pubyear: 2026, isRent: true },
+  { title: "B3", author: "a3", pubyear: 2027, isRent: false },
+  { title: "B4", author: "a4", pubyear: 2028, isRent: true },
+  { title: "B5", author: "a5", pubyear: 2029, isRent: false },
+];
 
+function findTheBook(title) {
+  const book = books.find((b) => b.title === title);
+  if (book) {
+    return "책이 있습니다.";
+  } else {
+    return "책을 찾을 수 없습니다.";
+  }
+}
+
+const CanIRent = books
+  .filter((book) => book.isRent === false)
+  .map((book) => book.title);
+
+console.log(CanIRent);
+
+function addbook (title, quthor, pubyear, isRent = false){
+  books.push({title, quthor, pubyear, isRent});
+}
+addbook("B6", "a6", 2030, false)
